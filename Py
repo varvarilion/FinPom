@@ -1,1 +1,1 @@
-print("Раил лох")
+print("@FinPom_Shkit_bot")
