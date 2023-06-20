@@ -1,1 +1,32 @@
-print("Раил хороший ЛОХ!")
+import telebot
+from telebot import types
+
+
+token = "5946905739:AAFOF4jmWwy39nCzCxjnvSAx8sy0HnBBc_8"
+bot = telebot.TeleBot(token)
+
+@bot.message_handler(commands = ["start"])
+def start(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn1 = types.KeyboardButton("Добавить расход")
+    btn2 = types.KeyboardButton("Добавить доход")
+    markup.add(btn1, btn2)
+    bot.send_message(message.chat.id, text="Здравствуйте! Чем я могу вам помочь?", reply_markup=markup)
+
+@bot.message_handler(content_types=['text'])
+def choice(message):
+    if(message.text == "Добавить расход"):
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton("Развлечения")
+        btn2 = types.KeyboardButton("Транспорт")
+        markup.add(btn1, btn2)
+        bot.send_message(message.chat.id, text="Выберите категорию", reply_markup=markup)
+    elif (message.text == "Развлечения") or (message.text == "Транспорт"):
+        bot.send_message(message.chat.id, text="Введите сумму")
+
+    elif(message.text == "Добавить доход"):
+        bot.send_message(message.chat.id, text="ок")
+
+
+bot.infinity_polling()
+
