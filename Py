@@ -1,1 +1,1 @@
-print("@FinPom_Shkit_bot")
+print("Раил хороший ЛОХ!")
