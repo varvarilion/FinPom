@@ -12,4 +12,6 @@ sheet.cell(row=current_row + 1, column=2).value = input()
 wb.save('balances.xlsx')
 if __name__ == "__main__":
     excel()
+ws2 = wb.create_sheet("ras", 1)
+ws3 = wb.create_sheet("doh", 2)
 wb.save('balances.xlsx')
