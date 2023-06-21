@@ -1,21 +1,17 @@
 import telebot
+from openpyxl import *
 from telebot import types
+
+wb = openpyxl.load_workbook('Library.xlsx')
+sheet = wb.active
 
 token = "5946905739:AAFOF4jmWwy39nCzCxjnvSAx8sy0HnBBc_8"
 bot = telebot.TeleBot(token)
 
 
-@bot.message_handler(commands = ["start"])
-def start(message):
-    markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    btn1 = types.KeyboardButton("Войти")
-    btn2 = types.KeyboardButton("Зарегистрироваться")
-    markup1.add(btn1, btn2)
-    bot.send_message(message.chat.id, text="Здравствуйте! Что вы хотите сделать?", reply_markup=markup1)
-
-
-@bot.message_handler(commands = ["menu"])
+@bot.message_handler(commands=["start"])
 def menu(message):
+    us_id = message.from_user.id
     markup2 = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn11 = types.KeyboardButton("Внести изменение в бюджет")
     btn12 = types.KeyboardButton("Мои доходы")
@@ -24,14 +20,9 @@ def menu(message):
     markup2.add(btn11, btn12, btn13, btn14)
     bot.send_message(message.chat.id, text="Чем я могу вам помочь?", reply_markup=markup2)
 
+
 @bot.message_handler(content_types=['text'])
 def _command_(message):
-    if message.text == "Войти":
-        bot.send_message(message.chat.id, "Введите логин и пароль через пробел")
-        bot.register_next_step_handler(message, add_user)
-    elif message.text == "Зарегистрироваться":
-        bot.send_message(message.chat.id, "Введите логин и пароль через пробел")
-        bot.register_next_step_handler(message, add_user)
     if message.text == "Внести изменение в бюджет":
         markup3 = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn21 = types.KeyboardButton("Добавить доход")
@@ -78,41 +69,6 @@ def _command_(message):
         btn7 = types.KeyboardButton("Назад")
         markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7)
         bot.send_message(message.chat.id, text="Выберите категорию", reply_markup=markup)
-    
-    elif (message.text == "Мой аккаунт"):
-        bot.send_message(message.chat.id, text="ок")
-
-def add_user(message):
-    account_data = message.text.split()
-    print(account_data)
-    if len(account_data) == 2:
-        user_name = account_data[0]
-        user_password = account_data[1]
-        bot.send_message(message.chat.id, "Вы вошли в аккаунт")
-        markup2 = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        btn11 = types.KeyboardButton("Внести изменение в бюджет")
-        btn12 = types.KeyboardButton("Мои доходы")
-        btn13 = types.KeyboardButton("Мои расходы")
-        btn14 = types.KeyboardButton("Мой кабинет")
-        markup2.add(btn11, btn12, btn13, btn14)
-        bot.send_message(message.chat.id, text="Чем я могу вам помочь?", reply_markup=markup2)
-
-    else:
-        markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        btn1 = types.KeyboardButton("Войти")
-        btn2 = types.KeyboardButton("Зарегистрироваться")
-        markup1.add(btn1, btn2)
-        bot.send_message(message.chat.id, text="Неверный ввод", reply_markup=markup1)
-
-
-
-
-
-
-
-
-
-
 
 
 bot.infinity_polling()
