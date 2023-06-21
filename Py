@@ -4,6 +4,7 @@ from telebot import types
 token = "5946905739:AAFOF4jmWwy39nCzCxjnvSAx8sy0HnBBc_8"
 bot = telebot.TeleBot(token)
 
+
 @bot.message_handler(commands = ["start"])
 def start(message):
     markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -12,14 +13,74 @@ def start(message):
     markup1.add(btn1, btn2)
     bot.send_message(message.chat.id, text="Здравствуйте! Что вы хотите сделать?", reply_markup=markup1)
 
-@bot.message_handler(commands=["log", "reg"])
+
+@bot.message_handler(commands = ["menu"])
+def menu(message):
+    markup2 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn11 = types.KeyboardButton("Внести изменение в бюджет")
+    btn12 = types.KeyboardButton("Мои доходы")
+    btn13 = types.KeyboardButton("Мои расходы")
+    btn14 = types.KeyboardButton("Мой кабинет")
+    markup2.add(btn11, btn12, btn13, btn14)
+    bot.send_message(message.chat.id, text="Чем я могу вам помочь?", reply_markup=markup2)
+
+@bot.message_handler(content_types=['text'])
 def _command_(message):
-    if True:
+    if message.text == "Войти":
         bot.send_message(message.chat.id, "Введите логин и пароль через пробел")
         bot.register_next_step_handler(message, add_user)
     elif message.text == "Зарегистрироваться":
         bot.send_message(message.chat.id, "Введите логин и пароль через пробел")
         bot.register_next_step_handler(message, add_user)
+    if message.text == "Внести изменение в бюджет":
+        markup3 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn21 = types.KeyboardButton("Добавить доход")
+        btn22 = types.KeyboardButton("Добавить расход")
+        btn23 = types.KeyboardButton("Назад")
+        markup3.add(btn21, btn22, btn23)
+        bot.send_message(message.chat.id, text="Выберите тип изменения", reply_markup=markup3)
+
+    elif (message.text == "Назад"):
+        markup2 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn11 = types.KeyboardButton("Внести изменение в бюджет")
+        btn12 = types.KeyboardButton("Мои доходы")
+        btn13 = types.KeyboardButton("Мои расходы")
+        btn14 = types.KeyboardButton("Мой кабинет")
+        btn15 = types.KeyboardButton("Назад")
+        markup2.add(btn11, btn12, btn13, btn14, btn15)
+        bot.send_message(message.chat.id, text="Чем я могу вам помочь?", reply_markup=markup2)
+
+    elif (message.text == "Развлечения") or (message.text == "Транспорт"):
+        bot.send_message(message.chat.id, text="Выберите счёт")
+
+    elif (message.text == "Добавить доход"):
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton("Зарплата")
+        btn2 = types.KeyboardButton("Стипендия")
+        btn3 = types.KeyboardButton("Карманные деньги")
+        btn4 = types.KeyboardButton("Соц. выплаты")
+        btn5 = types.KeyboardButton("Другое")
+        btn6 = types.KeyboardButton("Назад")
+        markup.add(btn1, btn2, btn3, btn4, btn5, btn6)
+        bot.send_message(message.chat.id, text="Выберите категорию", reply_markup=markup)
+
+    elif (message.text == "Мой аккаунт"):
+        bot.send_message(message.chat.id, text="ок")
+
+    elif (message.text == "Добавить расход"):
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton("Товары и быт")
+        btn2 = types.KeyboardButton("Транспорт")
+        btn3 = types.KeyboardButton("Развлечения")
+        btn4 = types.KeyboardButton("Медицина")
+        btn5 = types.KeyboardButton("Услуги")
+        btn6 = types.KeyboardButton("Другое")
+        btn7 = types.KeyboardButton("Назад")
+        markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7)
+        bot.send_message(message.chat.id, text="Выберите категорию", reply_markup=markup)
+    
+    elif (message.text == "Мой аккаунт"):
+        bot.send_message(message.chat.id, text="ок")
 
 def add_user(message):
     account_data = message.text.split()
@@ -35,7 +96,6 @@ def add_user(message):
         btn14 = types.KeyboardButton("Мой кабинет")
         markup2.add(btn11, btn12, btn13, btn14)
         bot.send_message(message.chat.id, text="Чем я могу вам помочь?", reply_markup=markup2)
-        bot.register_next_step_handler(message, choice)
 
     else:
         markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -45,53 +105,7 @@ def add_user(message):
         bot.send_message(message.chat.id, text="Неверный ввод", reply_markup=markup1)
 
 
-@bot.message_handler(content_types=['text'])
-def choice(message):
-    if message.text == "Внести изменение в бюджет":
-        markup3 = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        btn21 = types.KeyboardButton("Добавить доход")
-        btn22 = types.KeyboardButton("Добавить расход")
-        btn23 = types.KeyboardButton("Назад")
-        markup3.add(btn21, btn22, btn23)
-        bot.send_message(message.chat.id, text="Выберите тип изменения", reply_markup=markup3)
 
-    elif (message.text == "Назад"):
-        markup2 = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        btn11 = types.KeyboardButton("Внести изменение в бюджет")
-        btn12 = types.KeyboardButton("Мои доходы")
-        btn13 = types.KeyboardButton("Мои расходы")
-        btn14 = types.KeyboardButton("Мой кабинет")
-        markup2.add(btn11, btn12, btn13, btn14)
-        bot.send_message(message.chat.id, text="Чем я могу вам помочь?", reply_markup=markup2)
-
-    elif (message.text == "Развлечения") or (message.text == "Транспорт"):
-        bot.send_message(message.chat.id, text="Выберите счёт")
-
-    elif (message.text == "Добавить доход"):
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        btn1 = types.KeyboardButton("Зарплата")
-        btn2 = types.KeyboardButton("Стипендия")
-        btn3 = types.KeyboardButton("Карманные деньги")
-        btn4 = types.KeyboardButton("Соц. выплаты")
-        btn5 = types.KeyboardButton("Другое")
-        markup.add(btn1, btn2, btn3, btn4, btn5)
-        bot.send_message(message.chat.id, text="Выберите категорию", reply_markup=markup)
-
-    elif (message.text == "Мой аккаунт"):
-        bot.send_message(message.chat.id, text="ок")
-
-    elif (message.text == "Добавить расход"):
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        btn1 = types.KeyboardButton("Товары и быт")
-        btn2 = types.KeyboardButton("Транспорт")
-        btn3 = types.KeyboardButton("Развлечения")
-        btn4 = types.KeyboardButton("Медицина")
-        btn5 = types.KeyboardButton("Услуги")
-        btn6 = types.KeyboardButton("Другое")
-        markup.add(btn1, btn2, btn3, btn4, btn5, btn6)
-        bot.send_message(message.chat.id, text="Выберите категорию", reply_markup=markup)
-    else:
-        bot.send_message(message.chat.id, text="не понял")
 
 
 
