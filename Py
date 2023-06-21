@@ -1,6 +1,5 @@
 import telebot
 from telebot import types
-flag = False
 
 token = "5946905739:AAFOF4jmWwy39nCzCxjnvSAx8sy0HnBBc_8"
 bot = telebot.TeleBot(token)
@@ -13,11 +12,14 @@ def start(message):
     markup1.add(btn1, btn2)
     bot.send_message(message.chat.id, text="Здравствуйте! Что вы хотите сделать?", reply_markup=markup1)
 
-@bot.message_handler(content_types=['text'])
+@bot.message_handler(commands=["log", "reg"])
 def _command_(message):
-    if message.text == "Войти":
-     bot.send_message(message.chat.id, "Введите логин и пароль через пробел")
-     bot.register_next_step_handler(message, add_user)
+    if True:
+        bot.send_message(message.chat.id, "Введите логин и пароль через пробел")
+        bot.register_next_step_handler(message, add_user)
+    elif message.text == "Зарегистрироваться":
+        bot.send_message(message.chat.id, "Введите логин и пароль через пробел")
+        bot.register_next_step_handler(message, add_user)
 
 def add_user(message):
     account_data = message.text.split()
@@ -34,6 +36,7 @@ def add_user(message):
         markup2.add(btn11, btn12, btn13, btn14)
         bot.send_message(message.chat.id, text="Чем я могу вам помочь?", reply_markup=markup2)
         bot.register_next_step_handler(message, choice)
+
     else:
         markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn1 = types.KeyboardButton("Войти")
@@ -87,6 +90,9 @@ def choice(message):
         btn6 = types.KeyboardButton("Другое")
         markup.add(btn1, btn2, btn3, btn4, btn5, btn6)
         bot.send_message(message.chat.id, text="Выберите категорию", reply_markup=markup)
+    else:
+        bot.send_message(message.chat.id, text="не понял")
+
 
 
 
