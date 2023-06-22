@@ -1,0 +1,138 @@
+import telebot
+from telebot import types
+from openpyxl import *
+
+wb = load_workbook('FinPom2.xlsx')
+sheet1 = wb.worksheets[0]
+sheet1['A2'] = "rr"
+sheet1.cell(row=2, column=2).value = 2
+
+
+current_row = sheet1.max_row
+
+token = "5946905739:AAFOF4jmWwy39nCzCxjnvSAx8sy0HnBBc_8"
+bot = telebot.TeleBot(token)
+
+CASH_IN = 8
+CC_IN = 9
+CASH_OUT = 4
+CC_OUT = 5
+
+
+state = {}
+
+
+@bot.message_handler(commands=["start"])
+def menu(message):
+
+    markup2 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn11 = types.KeyboardButton("Изменение в бюджете")
+    btn12 = types.KeyboardButton("Мой бюджет")
+    btn13 = types.KeyboardButton("Мой доход")
+    btn14 = types.KeyboardButton("Мой расход")
+    markup2.add(btn11, btn12, btn13, btn14)
+    bot.send_message(message.chat.id, text="Чем я могу вам помочь?", reply_markup=markup2)
+
+@bot.message_handler(content_types=['text'])
+def _command_(message):
+    idd = message.from_user.id
+    us_id = str(idd)
+    if str(us_id) in wb.sheetnames:
+        sheets = wb.sheetnames
+        ind = sheets.index(str(us_id))
+        ws = wb.worksheets[ind]
+    else:
+        ws = wb.create_sheet(str(us_id))
+        ws['A2'].value = 0
+        ws['B2'].value = 0
+        ws['C2'].value = 0
+        ws['D2'].value = 0
+        ws['E2'].value = 0
+        ws['F2'].value = 0
+        ws['G2'].value = 0
+        ws['H2'].value = 0
+        ws['I2'].value = 0
+    wb.save("FinPom2.xlsx")
+
+    if (message.text == "В меню"):
+        markup2 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn11 = types.KeyboardButton("Изменение в бюджете")
+        btn12 = types.KeyboardButton("Мой бюджет")
+        btn13 = types.KeyboardButton("Мой доход")
+        btn14 = types.KeyboardButton("Мой расход")
+        markup2.add(btn11, btn12, btn13, btn14)
+        bot.send_message(message.chat.id, text="Чем я могу вам помочь?", reply_markup=markup2)
+
+    elif (message.text == "Мой бюджет"):
+        nal = int(ws['H2'].value) - int(ws['E2'].value)
+        beznal = int(ws['I2'].value) - int(ws['F2'].value)
+        budget = nal + beznal
+        bot.send_message(message.chat.id, text=f"Ваш бюджет составляет: {budget}"
+                                               f"\nНаличных денег: {nal}\nБезналичных денег: {beznal}")
+
+    elif (message.text == "Мой доход"):
+        dohnal = int(ws['H2'].value)
+        dohbez = int(ws['I2'].value)
+        doh = dohnal + dohbez
+        bot.send_message(message.chat.id, text=f"Ваш доход составляет: {doh}"
+                                               f"\nНаличных денег: {dohnal}\nБезналичных денег: {dohbez}")
+    elif (message.text == "Мой расход"):
+        rasnal = int(ws['E2'].value)
+        rasbez = int(ws['F2'].value)
+        ras = rasnal + rasbez
+        bot.send_message(message.chat.id, text=f"Ваш расход составляет: {ras}"
+                                               f"\nНаличных денег: {rasnal}\nБезналичных денег: {rasbez}")
+
+
+    elif message.text == "Изменение в бюджете":
+        markup3 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn21 = types.KeyboardButton("Добавить доход")
+        btn22 = types.KeyboardButton("Добавить расход")
+        btn23 = types.KeyboardButton("В меню")
+        markup3.add(btn21, btn22, btn23)
+        bot.send_message(message.chat.id, text="Выберите тип изменения", reply_markup=markup3)
+
+    elif (message.text == "Добавить доход"):
+        markup6 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn61 = types.KeyboardButton("Наличные⬆️")
+        btn62 = types.KeyboardButton("Безналичные⬆️")
+        btn63 = types.KeyboardButton("В меню")
+        markup6.add(btn61, btn62, btn63)
+        bot.send_message(message.chat.id, text="Выберите счёт", reply_markup=markup6)
+
+    elif (message.text == "Добавить расход"):
+        markup6 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn61 = types.KeyboardButton("Наличные⬇️")
+        btn62 = types.KeyboardButton("Безналичные⬇️")
+        btn63 = types.KeyboardButton("В меню")
+        markup6.add(btn61, btn62, btn63)
+        bot.send_message(message.chat.id, text="Выберите счёт", reply_markup=markup6)
+
+    elif (message.text == "Наличные⬆️") or (message.text == "Безналичные⬆️"):
+        if (message.text == "Наличные⬆️"):
+            state[message.from_user.id] = CASH_IN
+        else:
+            state[message.from_user.id] = CC_IN
+        bot.send_message(message.chat.id, text="Введите сумму")
+    elif (message.text == "Наличные⬇️") or (message.text == "Безналичные⬇️"):
+        if (message.text == "Наличные⬇️"):
+            state[message.from_user.id] = CASH_OUT
+        else:
+            state[message.from_user.id] = CC_OUT
+        bot.send_message(message.chat.id, text="Введите сумму")
+
+    if message.text.isnumeric():
+        money = int(message.text)
+        ws.cell(row=2, column=state[message.from_user.id]).value = (ws.cell(row=2, column=state[message.from_user.id]).value or 0) + money
+        wb.save('FinPom2.xlsx')
+        del state[message.from_user.id]
+        bot.send_message(message.chat.id, text="Данные изменены")
+        markup2 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn11 = types.KeyboardButton("Изменение в бюджете")
+        btn12 = types.KeyboardButton("Мой бюджет")
+        btn13 = types.KeyboardButton("Мой доход")
+        btn14 = types.KeyboardButton("Мой расход")
+        markup2.add(btn11, btn12, btn13, btn14)
+        bot.send_message(message.chat.id, text="Чем я могу вам помочь?", reply_markup=markup2)
+
+bot.infinity_polling()
